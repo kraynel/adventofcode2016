@@ -1,5 +1,6 @@
 _ = require 'lodash'
 bots = []
+outputs = []
 
 input = [
   'value 61 goes to bot 209'
@@ -249,9 +250,14 @@ updateBots = (instruction) ->
   bots[lowBot] ?= {index: lowBot} unless isOutputLow
   bots[highBot] ?= {index: highBot} unless isOutputHigh
 
+  outputs[lowBot] ?= {index: lowBot} if isOutputLow
+  outputs[highBot] ?= {index: highBot} if isOutputHigh
+
   bots[firstBot] ?= {index: firstBot}
   bots[firstBot].low = bots[lowBot] unless isOutputLow
+  bots[firstBot].outputLow = outputs[lowBot] if isOutputLow
   bots[firstBot].high = bots[highBot] unless isOutputHigh
+  bots[firstBot].outputHigh = outputs[highBot] if isOutputHigh
   bots[lowBot].parent = bots[firstBot] unless isOutputLow
   bots[highBot].parent = bots[firstBot] unless isOutputLow
 
@@ -265,6 +271,8 @@ setValue = (instruction) ->
   if bots[bot].values.length is 2
     setValue "value #{bots[bot].values[0]} goes to bot #{bots[bot].low.index}" if bots[bot].low?
     setValue "value #{bots[bot].values[1]} goes to bot #{bots[bot].high.index}" if bots[bot].high?
+    bots[bot].outputLow.value = bots[bot].values[0] if bots[bot].outputLow?
+    bots[bot].outputHigh.value = bots[bot].values[1] if bots[bot].outputHigh?
 
 input.map (instruction) ->
   if instruction.startsWith 'value'
@@ -277,3 +285,5 @@ _.each bots, (bot, index) ->
 bots = _.orderBy bots, ['low.index', 'high.index']
 console.log _.findIndex bots, (bot) ->
   bot.values?[0] is 17 and bot.values?[1] is 61
+
+console.log outputs
