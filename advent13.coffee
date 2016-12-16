@@ -42,9 +42,10 @@ findPath = (endX, endY) ->
       {x:toVisit.x, y: toVisit.y-1}
     ]
       if isOpen p.x, p.y
+        point = x: p.x, y: p.y, parent: toVisit
         visited[p.x] ?= []
-        visited[p.x][p.y] = -1
-        queue.push x: p.x, y: p.y, parent: toVisit
+        visited[p.x][p.y] = getSteps point
+        queue.push point
 
 endOfMaze = findPath 31, 39
 
